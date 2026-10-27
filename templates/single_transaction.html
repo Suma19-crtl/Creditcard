@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Single Transaction Detection - FraudShield AI</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+
+        body {
+            background: #f4f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background: #111827;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+        }
+
+        .page-container {
+            max-width: 1100px;
+            margin: 50px auto;
+        }
+
+        .main-card {
+            border: none;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.10);
+        }
+
+        .card-header-custom {
+            background: linear-gradient(
+                135deg,
+                #0d47a1,
+                #1976d2
+            );
+            color: white;
+            padding: 30px;
+        }
+
+        .card-header-custom h2 {
+            font-weight: bold;
+        }
+
+        .section-title {
+            font-weight: bold;
+            color: #0d47a1;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .form-control,
+        .form-select {
+            padding: 11px;
+            border-radius: 8px;
+        }
+
+        .info-box {
+            background: #eef5ff;
+            border-left: 5px solid #0d6efd;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .detect-btn {
+            padding: 13px 35px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+        }
+
+        .result-card {
+            margin-top: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .fraud-result {
+            border-left: 6px solid #dc3545;
+            background: #fff1f2;
+        }
+
+        .genuine-result {
+            border-left: 6px solid #198754;
+            background: #effaf3;
+        }
+
+        .suspicious-result {
+            border-left: 6px solid #ffc107;
+            background: #fff9e6;
+        }
+
+        .risk-score {
+            font-size: 42px;
+            font-weight: bold;
+        }
+
+        .risk-badge {
+            font-size: 18px;
+            padding: 10px 20px;
+            border-radius: 25px;
+        }
+
+        .reason-list li {
+            margin-bottom: 8px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================================================= -->
+<!-- NAVBAR -->
+<!-- ================================================= -->
+
+<nav class="navbar navbar-dark">
+
+    <div class="container">
+
+        <a class="navbar-brand text-white"
+           href="/">
+
+            <i class="fa-solid fa-shield-halved"></i>
+
+            FraudShield AI
+
+        </a>
+
+
+        <div>
+
+            <a href="/dashboard"
+               class="btn btn-outline-light me-2">
+                Dashboard
+
+            </a>
+
+            <a href="/logout"
+               class="btn btn-danger">
+
+                Logout
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ================================================= -->
+<!-- MAIN CONTAINER -->
+<!-- ================================================= -->
+
+<div class="container page-container">
+
+
+    <div class="card main-card">
+
+
+        <!-- HEADER -->
+
+        <div class="card-header-custom text-center">
+
+            <h2>
+
+                <i class="fa-solid fa-bolt"></i>
+
+                Single Transaction Detection
+
+            </h2>
+
+            <p class="mb-0">
+
+                Analyze an individual transaction using
+                real-time fraud risk rules.
+
+            </p>
+
+        </div>
+
+
+
+        <div class="card-body p-4 p-md-5">
+
+
+            <!-- INFORMATION -->
+
+            <div class="info-box">
+
+                <strong>
+                    <i class="fa-solid fa-circle-info"></i>
+                    How this works
+                </strong>
+
+                <p class="mb-0 mt-2">
+
+                    Enter the transaction details below.
+                    The system evaluates multiple risk indicators
+                    and generates a fraud risk score.
+
+                    If the transaction is classified as high-risk,
+                    the user account will be temporarily blocked
+                    for 24 hours.
+
+                </p>
+
+            </div>
+
+
+
+            <!-- ================================================= -->
+            <!-- FORM -->
+            <!-- ================================================= -->
+
+            <form action="/single-transaction"
+                  method="POST">
+
+
+                <!-- TRANSACTION INFORMATION -->
+
+                <h4 class="section-title">
+
+                    <i class="fa-solid fa-receipt"></i>
+
+                    Transaction Information
+
+                </h4>
+
+
+                <div class="row">
+
+
+                    <!-- TRANSACTION ID -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+
+                            Transaction ID
+
+                        </label>
+
+                        <input
+                            type="text"
+                            name="transaction_id"
+                            class="form-control"
+                            placeholder="TXN10001"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- AMOUNT -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+
+                            Transaction Amount
+
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            name="amount"
+                            class="form-control"
+                            placeholder="5000"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- LOCATION -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+
+                            Transaction Location
+
+                        </label>
+
+                        <input
+                            type="text"
+                            name="location"
+                            class="form-control"
+                            placeholder="Bangalore"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- TRANSACTION TYPE -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+
+                            Transaction Type
+
+                        </label>
+
+                        <select
+                            name="transaction_type"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="">
+                                Select transaction type
+                            </option>
+
+                            <option value="Online Purchase">
+                                Online Purchase
+                            </option>
+
+                            <option value="POS Purchase">
+                                POS Purchase
+                            </option>
+
+                            <option value="ATM Withdrawal">
+                                ATM Withdrawal
+                            </option>
+
+                            <option value="Bank Transfer">
+                                Bank Transfer
+                            </option>
+
+                            <option value="UPI">
+                                UPI
+                            </option>
+
+                            <option value="International">
+                                International Transaction
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+
+                <hr class="my-4">
+
+
+
+                <!-- ================================================= -->
+                <!-- SECURITY INFORMATION -->
+                <!-- ================================================= -->
+
+                <h4 class="section-title">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    Security Information
+
+                </h4>
+
+
+                <div class="row">
+
+
+                    <!-- FAILED LOGIN ATTEMPTS -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+
+                            Failed Login Attempts
+
+                        </label>
+
+                        <input
+                            type="number"
+                            name="failed_logins"
+                            class="form-control"
+                            min="0"
+                            max="20"
+                            value="0"
+                            required
+                        >
+
+                        <small class="text-muted">
+
+                            Number of failed login attempts
+                            before this transaction.
+
+                        </small>
+
+                    </div>
+
+
+                    <!-- NEW DEVICE -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+
+                            Device Status
+
+                        </label>
+
+                        <select
+                            name="device_status"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="Known">
+                                Known Device
+                            </option>
+
+                            <option value="New">
+                                New Device
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- ACCOUNT AGE -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+
+                            Account Age
+
+                        </label>
+
+                        <input
+                            type="number"
+                            name="account_age"
+                            class="form-control"
+                            min="0"
+                            placeholder="365"
+                            required
+                        >
+
+                        <small class="text-muted">
+
+                            Age of account in days.
+
+                        </small>
+
+                    </div>
+
+
+                    <!-- CARD PRESENT -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+
+                            Card Status
+
+                        </label>
+
+                        <select
+                            name="card_status"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="Present">
+                                Card Present
+                            </option>
+
+                            <option value="Not Present">
+                                Card Not Present
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+
+                <hr class="my-4">
+
+
+
+                <!-- ================================================= -->
+                <!-- ACTION -->
+                <!-- ================================================= -->
+
+                <div class="text-center mt-4">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary detect-btn"
+                    >
+
+                        <i class="fa-solid fa-shield-halved"></i>
+
+                        Analyze Transaction
+
+                    </button>
+
+
+                    <a
+                        href="/"
+                        class="btn btn-secondary btn-lg ms-2"
+                    >
+
+                        <i class="fa-solid fa-house"></i>
+
+                        Home
+
+                    </a>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+</body>
+
+</html>

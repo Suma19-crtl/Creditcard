@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FraudShield AI</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/styles.css') }}">
+
+</head>
+
+<body>
+
+
+<!-- ===================================================== -->
+<!-- NAVBAR -->
+<!-- ===================================================== -->
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top custom-nav">
+
+    <div class="container">
+        <!-- LOGO -->
+        <a class="navbar-brand fw-bold fs-4"
+           href="{{ url_for('home') }}">
+            <i class="fa-solid fa-shield-halved"></i>
+            FraudShield AI</a>
+
+        <!-- MOBILE MENU BUTTON -->
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#menu"
+                aria-controls="menu"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+
+        <!-- NAVIGATION MENU -->
+        <div class="collapse navbar-collapse"
+             id="menu">
+
+            <ul class="navbar-nav ms-auto align-items-center">
+
+
+                <!-- HOME -->
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('home') }}">
+
+                        <i class="fa-solid fa-house"></i>
+
+                        Home
+
+                    </a>
+
+                </li>
+
+
+                <!-- DETECTION -->
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('predict') }}">
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        Detection
+
+                    </a>
+
+                </li>
+
+
+                <!-- ANALYTICS -->
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('upload') }}">
+
+                        <i class="fa-solid fa-chart-column"></i>
+
+                        Analytics
+
+                    </a>
+
+                </li>
+
+
+                <!-- AI ASSISTANT -->
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('chat') }}">
+
+                        <i class="fa-solid fa-robot"></i>
+
+                        AI Assistant
+
+                    </a>
+
+                </li>
+
+
+                <!-- ABOUT -->
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="/about">
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                        About
+
+                    </a>
+
+                </li>
+
+
+                <!-- ================================================= -->
+                <!-- LOGGED IN USER -->
+                <!-- ================================================= -->
+
+                {% if session.get("uid") %}
+
+
+                    <!-- ADMIN -->
+                    {% if session.get("role") == "admin" %}
+
+                        <li class="nav-item ms-3">
+
+                            <a href="{{ url_for('admin') }}"
+                               class="btn btn-danger fw-bold px-4">
+
+                                <i class="fa-solid fa-user-shield"></i>
+
+                                Admin Dashboard
+
+                            </a>
+
+                        </li>
+
+
+                    <!-- NORMAL USER -->
+                    {% else %}
+
+                        <li class="nav-item ms-3">
+
+                            <a href="{{ url_for('dashboard') }}"
+                               class="btn btn-primary fw-bold px-4">
+
+                                <i class="fa-solid fa-chart-line"></i>
+
+                                Dashboard
+
+                            </a>
+
+                        </li>
+
+                    {% endif %}
+
+
+                <!-- ================================================= -->
+                <!-- NOT LOGGED IN -->
+                <!-- ================================================= -->
+
+                {% else %}
+
+                    <li class="nav-item ms-3">
+
+                        <a href="{{ url_for('login') }}"
+                           class="btn btn-success fw-bold px-4">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            Login
+
+                        </a>
+
+                    </li>
+
+                {% endif %}
+
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ===================================================== -->
+<!-- HERO SECTION -->
+<!-- ===================================================== -->
+
+<section class="hero">
+
+    <div class="container">
+
+        <div class="row align-items-center">
+
+
+            <!-- LEFT SIDE -->
+            <div class="col-lg-6">
+
+                <h1>AI Powered
+                    <span>
+                        Fraud Detection
+                    </span>
+                    System</h1>
+
+                <p>
+                    Protect digital transactions using
+                    Machine Learning and Artificial Intelligence.
+
+                    Detect suspicious credit card activities
+                    with advanced risk analysis.
+                </p>
+                <div class="mt-4 hero-buttons">
+
+    <!-- ML DETECTION -->
+
+    <a href="{{ url_for('predict') }}"
+       class="main-btn">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        ML Detection
+    </a>
+
+    <a href="{{ url_for('single_transaction') }}"
+       class="outline-btn">
+
+        <i class="fa-solid fa-bolt"></i>
+        Single Transaction
+    </a>
+
+    <a href="{{ url_for('upload') }}"
+       class="outline-btn">
+
+        <i class="fa-solid fa-file-csv"></i>Upload CSV
+    </a>
+
+</div>
+            </div>
+
+            <!-- RIGHT SIDE -->
+                 <div class="col-lg-6 text-center">
+                <img src="{{ url_for('static', filename='images/fraud.jpg') }}"
+                     class="fraud-img"
+                     alt="Fraud Detection">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================================================== -->
+<!-- STATISTICS -->
+<!-- ===================================================== -->
+
+<section class="stats">
+    <div class="container">
+        <div class="row text-center">
+
+            <!-- STAT 1 -->
+            <div class="col-md-3">
+
+                <h2>ML Powered</h2>
+
+                <p>
+                    Detection System
+                </p>
+
+            </div>
+
+
+            <!-- STAT 2 -->
+            <div class="col-md-3">
+
+                <h2>5000+</h2>
+
+                <p>
+                    Transactions Tested
+                </p>
+
+            </div>
+
+
+            <!-- STAT 3 -->
+            <div class="col-md-3">
+
+                <h2>24/7</h2>
+
+                <p>
+                    AI Monitoring
+                </p>
+
+            </div>
+
+
+            <!-- STAT 4 -->
+            <div class="col-md-3">
+
+                <h2>AI</h2>
+
+                <p>
+                    Risk Analysis
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================== -->
+<!-- FEATURES -->
+<!-- ===================================================== -->
+
+<section class="container features">
+
+    <h2>
+        Why Choose FraudShield AI?
+    </h2>
+
+
+    <div class="row mt-5">
+
+
+        <!-- MACHINE LEARNING -->
+        <div class="col-md-4">
+
+            <div class="feature-card">
+
+                <i class="fa-solid fa-brain"></i>
+
+                <h3>
+                    Machine Learning
+                </h3>
+
+                <p>
+
+                    Random Forest machine learning
+                    model analyzes transaction patterns
+                    to identify potentially fraudulent
+                    transactions.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- BULK ANALYSIS -->
+        <div class="col-md-4">
+
+            <div class="feature-card">
+
+                <i class="fa-solid fa-file-csv"></i>
+
+                <h3>
+                    Bulk CSV Analysis
+                </h3>
+
+                <p>
+
+                    Upload CSV or Excel datasets
+                    and analyze thousands of transactions
+                    using automated fraud detection.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- AI ASSISTANT -->
+        <div class="col-md-4">
+
+            <div class="feature-card">
+
+                <i class="fa-solid fa-robot"></i>
+
+                <h3>
+                    AI Fraud Assistant
+                </h3>
+
+                <p>
+
+                    Ask questions about fraud detection,
+                    transaction analysis, risk scores
+                    and cybersecurity using AI.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================== -->
+<!-- HOW IT WORKS -->
+<!-- ===================================================== -->
+
+<section class="steps">
+
+    <div class="container">
+
+        <h2>
+            How It Works
+        </h2>
+
+
+        <div class="row text-center mt-5">
+
+
+            <!-- STEP 1 -->
+            <div class="col-md-3">
+
+                <div class="step">
+                    1
+                </div>
+
+                <h5>
+                    Enter Data
+                </h5>
+
+            </div>
+
+
+
+            <!-- STEP 2 -->
+            <div class="col-md-3">
+
+                <div class="step">
+                    2
+                </div>
+
+                <h5>
+                    ML Analysis
+                </h5>
+
+            </div>
+
+
+
+            <!-- STEP 3 -->
+            <div class="col-md-3">
+
+                <div class="step">
+                    3
+                </div>
+
+                <h5>
+                    Fraud Prediction
+                </h5>
+
+            </div>
+
+
+
+            <!-- STEP 4 -->
+            <div class="col-md-3">
+
+                <div class="step">
+                    4
+                </div>
+
+                <h5>
+                    AI Report
+                </h5>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================== -->
+<!-- FOOTER -->
+<!-- ===================================================== -->
+
+<footer>
+
+    <h5>
+        <i class="fa-solid fa-shield-halved"></i>
+
+        FraudShield AI
+    </h5>
+
+
+    <p>
+
+        Built using Flask, Python,
+        Machine Learning, Firebase and AI
+
+    </p>
+
+</footer>
+
+
+
+<!-- Bootstrap JavaScript -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+</body>
+
+</html>

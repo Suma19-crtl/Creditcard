@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Fraud Detection Results</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+
+        body {
+            background: #f4f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #0d47a1, #1976d2);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            border: none;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .analysis-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .analysis-header {
+            background: #0d47a1;
+            color: white;
+        }
+
+        .ai-header {
+            background: #6f42c1;
+            color: white;
+        }
+
+        .fraud-card {
+            border-left: 5px solid #dc3545;
+        }
+
+        .transaction-table {
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .badge-fraud {
+            background: #dc3545;
+            color: white;
+            padding: 7px 12px;
+            border-radius: 20px;
+        }
+
+        .badge-genuine {
+            background: #198754;
+            color: white;
+            padding: 7px 12px;
+            border-radius: 20px;
+        }
+
+        .empty-fraud {
+            padding: 30px;
+            text-align: center;
+            color: #198754;
+        }
+
+        .ai-info-box {
+            border-left: 5px solid #6f42c1;
+            background: #f3efff;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .method-badge {
+            font-size: 14px;
+            padding: 8px 14px;
+            border-radius: 20px;
+        }
+
+        .report-content h1 {
+            font-size: 25px;
+            margin-top: 20px;
+            color: #0d47a1;
+        }
+
+        .report-content h2 {
+            font-size: 21px;
+            margin-top: 20px;
+            color: #0d47a1;
+        }
+
+        .report-content h3 {
+            font-size: 18px;
+            margin-top: 15px;
+        }
+
+        .report-content p {
+            line-height: 1.7;
+        }
+
+        .report-content li {
+            margin-bottom: 7px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container py-5">
+
+
+    <!-- ================================= -->
+    <!-- HEADER -->
+    <!-- ================================= -->
+
+    <div class="dashboard-header text-center">
+        <h1>🛡 Credit Card Fraud Detection</h1>
+        <p class="mb-0">
+            Transaction Analysis & Fraud Prediction Report</p>
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- ML DATASET RESULT -->
+    <!-- ================================= -->
+
+    {% if ml_prediction %}
+
+        <!-- STATUS -->
+
+        <div class="alert alert-success shadow-sm">
+            <strong>✅ Machine Learning Analysis Completed</strong>
+            <br>
+            The uploaded dataset matches the structure of the
+            trained fraud detection model.
+            <br>
+            The transactions were classified using the
+            trained machine-learning model.
+            <br><br>
+
+            <span class="badge bg-success method-badge">
+                🤖 Analysis Method: Machine Learning
+            </span>
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- STATISTICS -->
+        <!-- ================================= -->
+
+        <div class="row g-4 mb-5">
+            <!-- TOTAL -->
+            <div class="col-md-3">
+                <div class="card stat-card shadow text-center p-4">
+                    <div class="text-primary fs-1">📊</div>
+                    <div class="stat-number">{{ total }}</div>
+                    <p class="text-muted mb-0">Total Transactions</p>
+                </div>
+            </div>
+
+            <!-- FRAUD -->
+            <div class="col-md-3">
+                <div class="card stat-card shadow text-center p-4">
+                    <div class="text-danger fs-1">🚨</div>
+                    <div class="stat-number text-danger">{{ fraud }}</div>
+                    <p class="text-muted mb-0">Fraud Transactions
+                </p>
+                </div>
+            </div>
+
+            <!-- GENUINE -->
+            <div class="col-md-3">
+                <div class="card stat-card shadow text-center p-4">
+                    <div class="text-success fs-1">✅</div>
+                    <div class="stat-number text-success">
+                        {{ genuine }}
+                    </div>
+
+                    <p class="text-muted mb-0">
+                        Genuine Transactions
+                    </p>
+                </div>
+            </div>
+
+
+            <!-- FRAUD RATE -->
+            <div class="col-md-3">
+                <div class="card stat-card shadow text-center p-4">
+                    <div class="text-warning fs-1">📈</div>
+                    <div class="stat-number">
+                        {{ fraud_percentage }}%
+                    </div>
+                    <p class="text-muted mb-0">Fraud Rate</p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- RISK LEVEL -->
+        <!-- ================================= -->
+
+        <div class="card shadow mb-5">
+            <div class="card-body text-center">
+                <h4>Overall Risk Level</h4>
+                {% if risk_level == "High" %}
+                    <span class="badge bg-danger fs-5 px-4 py-2">
+                        🚨 High Risk
+                    </span>
+                {% elif risk_level == "Medium" %}
+                    <span class="badge bg-warning text-dark fs-5 px-4 py-2">
+                        ⚠ Medium Risk
+                    </span>
+                {% else %}
+                    <span class="badge bg-success fs-5 px-4 py-2">✅ Low Risk</span>
+                {% endif %}
+            </div>
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- AI EXPLANATION -->
+        <!-- ================================= -->
+
+        {% if ai_report %}
+
+        <div class="card analysis-card shadow mb-5">
+            <div class="card-header analysis-header p-3">
+                <h4 class="mb-0">
+                    🤖 AI Transaction Analysis
+                </h4>
+            </div>
+            <div class="card-body p-4 report-content">
+                <p class="text-muted">
+                    The machine-learning model performed the
+                    fraud classification. AI was used only to
+                    explain and summarize the prediction results.
+                </p>
+
+                <hr>
+
+                {{ ai_report | safe }}
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- ================================= -->
+        <!-- FRAUD TRANSACTIONS -->
+        <!-- ================================= -->
+
+        <div class="card shadow mb-5 fraud-card">
+
+            <div class="card-header bg-danger text-white">
+
+                <h4 class="mb-0">
+                    🚨 High-Risk Fraudulent Transactions
+                </h4>
+
+            </div>
+
+
+            <div class="card-body p-0">
+                {% if fraud_transactions %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Time</th>
+                                <th>Amount</th>
+                                <th>Prediction</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for transaction in fraud_transactions %}
+                        <tr>
+                            <td>
+                                {{ loop.index }}
+                            </td>
+
+                            <td>{{ transaction.Time }}</td>
+                            <td>${{ "%.2f"|format(transaction.Amount) }}
+                            </td>
+                            <td><span class="badge-fraud">
+                                   🚨 Fraud
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-fraud">
+                    <h4>✅ No Fraudulent Transactions Detected</h4>
+
+                    <p class="mb-0">
+                        All analyzed transactions were classified
+                        as genuine by the trained machine-learning model.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ML ACTION BUTTONS -->
+        <div class="text-center mb-5">
+            <a href="/download-report" class="btn btn-danger">
+    <i class="fa-solid fa-file-pdf"></i>
+    Download Prediction Report
+</a>
+
+            <a href="/upload"
+               class="btn btn-primary btn-lg me-2">
+                📤 Upload Another File
+            </a>
+
+            <a href="/"
+               class="btn btn-secondary btn-lg">
+                🏠 Home
+            </a>
+
+        </div>
+
+
+    <!-- ================================= -->
+    <!-- UNKNOWN DATASET / AI RESULT -->
+    <!-- ================================= -->
+
+    {% else %}
+        <!-- STATUS -->
+        <div class="alert alert-info shadow-sm">
+            <strong>🤖 AI Dataset Analysis</strong>
+            <br>
+            The uploaded dataset does not match the structure
+            required by the trained machine-learning model.
+            <br><br>
+            Instead of forcing the dataset through the ML model,
+            the system has automatically transferred the dataset
+            for AI-assisted analysis.
+            <br><br>
+
+            <span class="badge bg-primary method-badge">
+                🤖 Analysis Method: Groq AI
+            </span>
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- IMPORTANT NOTICE -->
+        <!-- ================================= -->
+
+        <div class="ai-info-box mb-5">
+
+            <h5>
+                🔎 About This Analysis
+            </h5>
+
+            <p class="mb-0">
+
+                This dataset is structurally different from the
+                dataset used to train the fraud detection model.
+
+                Therefore, no unsupported Fraud/Genuine predictions
+                have been generated.
+
+                The AI analysis focuses on the dataset structure,
+                transaction characteristics, missing values,
+                possible suspicious patterns and potential
+                fraud indicators.
+
+            </p>
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- DATASET STATISTICS -->
+        <!-- ================================= -->
+
+        <div class="row g-4 mb-5">
+
+            <!-- TOTAL ROWS -->
+            <div class="col-md-4">
+                <div class="card stat-card shadow text-center p-4">
+                    <div class="text-primary fs-1">
+                        📊
+                    </div>
+                    <div class="stat-number">
+                        {{ total }}
+                    </div>
+
+                    <p class="text-muted mb-0">
+                        Dataset Records
+                    </p>
+                </div>
+            </div>
+
+            <!-- MODEL STATUS -->
+            <div class="col-md-4">
+                <div class="card stat-card shadow text-center p-4">
+                    <div class="text-warning fs-1">
+                        ⚠️
+                    </div>
+
+                    <div class="stat-number text-warning">
+                        Not Used
+                    </div>
+
+                    <p class="text-muted mb-0">
+                        ML Model
+                    </p>
+                </div>
+            </div>
+
+
+            <!-- AI STATUS -->
+            <div class="col-md-4">
+                <div class="card stat-card shadow text-center p-4">
+                    <div class="text-primary fs-1">🤖</div>
+                    <div class="stat-number text-primary">AI Analysis</div>
+                    <p class="text-muted mb-0">Analysis Engine</p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- AI REPORT -->
+        <!-- ================================= -->
+
+        {% if ai_report %}
+        <div class="card analysis-card shadow mb-5">
+            <div class="card-header ai-header p-3">
+                <h4 class="mb-0">
+                    🤖 AI Dataset Analysis Report
+                </h4>
+            </div>
+
+            <div class="card-body p-4 report-content">
+                {{ ai_report | safe }}
+            </div>
+        </div>
+
+        {% endif %}
+
+        <!-- ================================= -->
+        <!-- AI DISCLAIMER -->
+        <!-- ================================= -->
+
+        <div class="alert alert-warning shadow-sm mb-5">
+            <strong>⚠️ Important:</strong>
+
+            This AI-generated analysis is an exploratory
+            assessment of the uploaded dataset.
+
+            It is not a replacement for a trained fraud
+            classification model and should not be interpreted
+            as confirmation that individual transactions are
+            fraudulent.
+
+        </div>
+        <!-- ================================= -->
+        <!-- AI ACTION BUTTONS -->
+        <!-- ================================= -->
+
+        <div class="text-center mb-5">
+
+            <a href="/upload"
+               class="btn btn-primary btn-lg me-2">
+
+                📤 Upload Another File
+
+            </a>
+
+
+            <a href="/"
+               class="btn btn-secondary btn-lg">
+                🏠 Home
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+</body>
+</html>
+

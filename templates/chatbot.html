@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Fraud Assistant</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body{
+    background:#f4f6f9;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.chat-container{
+
+    width:900px;
+    height:700px;
+    background:white;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 15px 35px rgba(0,0,0,0.2);
+    display:flex;
+    flex-direction:column;
+
+}
+
+.chat-header{
+
+    background:linear-gradient(135deg,#0d6efd,#4f46e5);
+    color:white;
+    padding:20px;
+    text-align:center;
+
+}
+
+.chat-header h3{
+
+    margin:0;
+    font-weight:bold;
+
+}
+
+.chat-header p{
+
+    margin:5px 0 0;
+    opacity:0.9;
+
+}
+
+.chat-box{
+
+    flex:1;
+    overflow-y:auto;
+    padding:20px;
+    background:#f8f9fa;
+
+}
+
+.message{
+
+    margin-bottom:15px;
+    display:flex;
+
+}
+
+.user{
+
+    justify-content:flex-end;
+
+}
+
+.bot{
+
+    justify-content:flex-start;
+
+}
+
+.bubble{
+
+    max-width:75%;
+    padding:15px;
+    border-radius:15px;
+    word-wrap:break-word;
+    white-space:pre-wrap;
+}
+
+.user .bubble{
+
+    background:#0d6efd;
+    color:white;
+
+}
+
+.bot .bubble{
+
+    background:white;
+    border:1px solid #ddd;
+
+}
+
+.chat-footer{
+
+    padding:15px;
+    border-top:1px solid #ddd;
+    background:white;
+
+}
+
+.typing{
+
+    font-style:italic;
+    color:gray;
+    margin-bottom:10px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="chat-container">
+<div class="chat-header">
+<h3>🤖 AI Fraud Assistant</h3>
+<p>Ask anything about fraud detection, transactions, cybersecurity or your dashboard.</p>
+
+</div>
+<div class="chat-box" id="chatBox">
+<div class="message bot">
+<div class="bubble">
+
+👋 Hello!
+
+I'm your AI Fraud Detection Assistant.
+You can ask me things like:
+• Explain credit card fraud
+• Why is this transaction fraudulent?
+• How can fraud be prevented?
+• Explain confidence score
+• Explain dashboard statistics
+
+</div>
+</div>
+
+</div>
+
+<div class="chat-footer">
+<div id="typing" class="typing"></div>
+<div class="input-group">
+
+<input
+type="text"
+id="question"
+class="form-control"
+placeholder="Ask your question...">
+
+<button class="btn btn-primary"onclick="sendMessage()">
+Send
+</button>
+</div>
+
+<div class="mt-3 text-center">
+<a href="/dashboard"
+class="btn btn-success">
+
+⬅ Dashboard
+</a>
+</div>
+</div>
+</div>
+<script>
+
+const chatBox=document.getElementById("chatBox");
+const typing=document.getElementById("typing");
+
+function addMessage(text,type){
+    const message=document.createElement("div");
+    message.className="message "+type;
+    const bubble=document.createElement("div");
+    bubble.className="bubble";
+    bubble.textContent=text;
+    message.appendChild(bubble);
+    chatBox.appendChild(message);
+    chatBox.scrollTop=chatBox.scrollHeight;
+
+}
+
+async function sendMessage(){
+    const input=document.getElementById("question");
+    const question=input.value.trim();
+    if(question==="") return;
+    addMessage(question,"user");
+    input.value="";
+    typing.innerHTML="🤖 AI is typing...";
+    try{
+        const response=await fetch("/ask-ai",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+                question:question
+         })
+        });
+        const data=await response.json();
+        typing.innerHTML="";
+        addMessage(data.answer,"bot");
+    }
+
+    catch(error){
+        typing.innerHTML="";
+        addMessage("Something went wrong. Please try again.","bot");
+    }
+}
+
+document.getElementById("question").addEventListener("keypress",function(e){
+    if(e.key==="Enter"){
+        sendMessage();
+    }
+});
+
+</script>
+
+</body>
+</html>

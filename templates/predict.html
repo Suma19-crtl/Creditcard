@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ML Fraud Detection - FraudShield AI</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+
+        body {
+            background: #f4f7fb;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #0f172a;
+        }
+
+        .navbar {
+            background: #0f172a;
+            padding: 14px 0;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 22px;
+        }
+
+        .page-container {
+            max-width: 1150px;
+            margin: 45px auto;
+        }
+
+        .main-card {
+            border: none;
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 15px 45px rgba(15, 23, 42, 0.10);
+        }
+
+        .card-header-custom {
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f172a,
+                    #1d4ed8,
+                    #0ea5e9
+                );
+
+            color: white;
+            padding: 40px 25px;
+        }
+
+        .card-header-custom h2 {
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        .card-header-custom p {
+            color: #dbeafe;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 5px solid #2563eb;
+            padding: 18px 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .info-box strong {
+            color: #1d4ed8;
+            font-size: 17px;
+        }
+
+        .section-title {
+            color: #1e3a8a;
+            font-weight: 750;
+            margin-top: 25px;
+            margin-bottom: 20px;
+        }
+
+        .section-title i {
+            color: #2563eb;
+            margin-right: 8px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .form-control {
+            padding: 12px 14px;
+            border-radius: 9px;
+            border: 1px solid #cbd5e1;
+            transition: all 0.25s ease;
+        }
+
+        .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .feature-info {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 10px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .feature-info i {
+            color: #2563eb;
+            margin-right: 6px;
+        }
+
+        .predict-btn {
+            padding: 13px 35px;
+            font-size: 17px;
+            font-weight: 700;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #2563eb, #0ea5e9);
+            border: none;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+            transition: 0.3s ease;
+        }
+
+        .predict-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(37, 99, 235, 0.35);
+        }
+
+        .back-btn {
+            padding: 13px 25px;
+            border-radius: 10px;
+        }
+
+        .security-note {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .model-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+
+        .v-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 10px;
+        }
+
+        .v-section .form-control {
+            background: white;
+        }
+
+        @media (max-width: 768px) {
+
+            .page-container {
+                margin: 25px 15px;
+            }
+
+            .card-header-custom {
+                padding: 30px 20px;
+            }
+
+            .card-header-custom h2 {
+                font-size: 25px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================================================= -->
+<!-- NAVBAR -->
+<!-- ================================================= -->
+
+<nav class="navbar navbar-dark">
+
+    <div class="container">
+
+        <a class="navbar-brand text-white" href="/">
+
+            <i class="fa-solid fa-shield-halved"></i>
+
+            FraudShield AI
+
+        </a>
+
+        <div>
+
+            <a href="/dashboard"
+               class="btn btn-outline-light me-2">
+
+                <i class="fa-solid fa-chart-line"></i>
+                Dashboard
+
+            </a>
+
+            <a href="/logout"
+               class="btn btn-danger">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- ================================================= -->
+<!-- MAIN -->
+<!-- ================================================= -->
+
+<div class="container page-container">
+
+    <div class="card main-card">
+
+
+        <!-- HEADER -->
+
+        <div class="card-header-custom text-center">
+
+            <h2>
+
+                <i class="fa-solid fa-brain"></i>
+
+                Machine Learning Fraud Detection
+
+            </h2>
+
+            <p class="mb-0">
+
+                Analyze a transaction using the trained
+                Random Forest fraud detection model.
+
+            </p>
+
+            <div class="model-badge">
+
+                <i class="fa-solid fa-microchip"></i>
+
+                Random Forest ML Model
+
+            </div>
+
+        </div>
+
+
+        <!-- BODY -->
+
+        <div class="card-body p-4 p-md-5">
+
+
+            <!-- INFO -->
+
+            <div class="info-box">
+
+                <strong>
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    How ML Detection Works
+
+                </strong>
+
+                <p class="mb-0 mt-2">
+
+                    Enter the transaction features used by the
+                    trained machine-learning model. FraudShield AI
+                    will analyze the values and classify the
+                    transaction as <strong>Fraud</strong> or
+                    <strong>Genuine</strong>.
+
+                </p>
+
+            </div>
+
+
+            <form action="/predict" method="POST">
+
+
+                <!-- ================================================= -->
+                <!-- BASIC TRANSACTION INFORMATION -->
+                <!-- ================================================= -->
+
+                <h4 class="section-title">
+
+                    <i class="fa-solid fa-receipt"></i>
+
+                    Transaction Information
+
+                </h4>
+
+
+                <div class="row">
+
+
+                    <!-- TIME -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+
+                            Transaction Time
+
+                        </label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            name="Time"
+                            class="form-control"
+                            placeholder="Example: 406"
+                            required
+                        >
+
+                        <small class="text-muted">
+
+                            Time value from the transaction dataset.
+
+                        </small>
+
+                    </div>
+
+
+                    <!-- AMOUNT -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+
+                            Transaction Amount
+
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            name="Amount"
+                            class="form-control"
+                            placeholder="Example: 1250.50"
+                            required
+                        >
+
+                        <small class="text-muted">
+
+                            Transaction amount in currency units.
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <hr class="my-4">
+
+
+                <!-- ================================================= -->
+                <!-- V1 - V14 -->
+                <!-- ================================================= -->
+
+                <h4 class="section-title">
+
+                    <i class="fa-solid fa-database"></i>
+
+                    Transaction Features
+
+                </h4>
+
+
+                <div class="feature-info mb-4">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    The V1–V28 values are numerical features
+                    extracted from the original credit-card
+                    transaction dataset and are required by
+                    the trained ML model.
+
+                </div>
+
+
+                <div class="v-section">
+
+                    <div class="row">
+
+
+                        <!-- V1 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V1</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V1"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V2 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V2</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V2"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V3 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V3</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V3"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V4 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V4</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V4"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V5 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V5</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V5"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V6 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V6</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V6"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V7 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V7</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V7"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V8 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V8</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V8"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V9 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V9</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V9"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V10 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V10</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V10"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V11 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V11</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V11"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V12 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V12</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V12"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V13 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V13</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V13"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V14 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V14</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V14"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- V15 - V28 -->
+                <!-- ================================================= -->
+
+                <div class="v-section mt-4">
+
+                    <div class="row">
+
+
+                        <!-- V15 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V15</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V15"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V16 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V16</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V16"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V17 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V17</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V17"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V18 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V18</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V18"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V19 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V19</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V19"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V20 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V20</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V20"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V21 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V21</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V21"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V22 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V22</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V22"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V23 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V23</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V23"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V24 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V24</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V24"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V25 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V25</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V25"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V26 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V26</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V26"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V27 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V27</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V27"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- V28 -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="form-label">V28</label>
+
+                            <input
+                                type="number"
+                                step="any"
+                                name="V28"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- ACTION -->
+                <!-- ================================================= -->
+
+                <div class="text-center mt-5">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary predict-btn me-2"
+                    >
+
+                        <i class="fa-solid fa-brain"></i>
+
+                        Run ML Prediction
+
+                    </button>
+
+
+                    <a
+                        href="/dashboard"
+                        class="btn btn-secondary btn-lg back-btn"
+                    >
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Back
+
+                    </a>
+
+                </div>
+
+
+                <p class="text-center security-note mt-4">
+
+                    🔒 Your transaction information is processed
+                    through the FraudShield AI prediction system.
+
+                </p>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+</body>
+
+</html>
